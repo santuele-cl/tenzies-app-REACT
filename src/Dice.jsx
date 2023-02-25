@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { nanoid } from 'nanoid'
+import Confetti from 'react-confetti'
 import Die from './Die.jsx'
 
 const Dice = () => {
@@ -39,17 +40,18 @@ const Dice = () => {
       return diceArray
     }
 
-    function resetGame() {
-        setIsGameOver(false)
-        setDiceArray(allNewDice())
-    }
-
     function rerollDice() {
-        setDiceArray( prevDiceArray => {
-            return prevDiceArray.map( (die) => {
-                return die.isHeld ? die : generateNewDie()
+        if(!isGameOver) {
+            setDiceArray( prevDiceArray => {
+                return prevDiceArray.map( (die) => {
+                    return die.isHeld ? die : generateNewDie()
+                })
             })
-        })
+        } else {
+            setIsGameOver(false)
+            setDiceArray(allNewDice())
+        }
+        
     }
 
     function toggleIsHeld(id) {
@@ -72,9 +74,13 @@ const Dice = () => {
     return ( 
         <div>
             {isGameOver && 
-                <div className="absolute top-8 mx-auto max-w-lg w-11/12 py-4 px-8 bg-gray-500 text-green-200 text-2xl rounded-lg">
-                    <div className="flex justify-center">
-                        <p>Congratulations! You won the game!</p>
+                <div>
+                    <Confetti />
+
+                    <div className="absolute top-8 mx-auto max-w-lg w-11/12 py-4 px-8 bg-gray-500 text-green-200 text-2xl rounded-lg">
+                        <div className="flex justify-center">
+                            <p>Congratulations! You won the game!</p>
+                        </div>
                     </div>
                 </div>
             }
@@ -84,8 +90,8 @@ const Dice = () => {
             </div>
             <button 
                 className="text-lg bg-blue-500 text-gray-50 py-2 px-6 font-bold tracking-wide rounded-md" 
-                onClick={isGameOver ? resetGame : rerollDice}>
-                    { isGameOver ? "Reset game" : "Roll dice"}
+                onClick={rerollDice}>
+                    { isGameOver ? "New game" : "Roll dice"}
             </button>
         </div>
 
